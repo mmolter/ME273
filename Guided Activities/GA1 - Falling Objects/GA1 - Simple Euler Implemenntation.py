@@ -230,7 +230,7 @@ def relative_error(approx, exact):
 
 if __name__ == '__main__':
 
-  ''' Exercise 1: Deliverable Requirements
+  ''' Exercise 1: Compatational Model of a Falling Sphere w/Air Resistance
         
           (1) Implement model based on Euler approximation
           
@@ -244,20 +244,23 @@ if __name__ == '__main__':
 
   '''
   radius = 0.012
-  mass = 8
   area = np.pi * radius**2
+
+  mass = 8
+
   h = 440
+
   dt = 0.001
 
   t_num, x_num, v_num, a_num = euler_projectile(mass=mass, area=area, x0=h, dt=dt)
 
-  ''' Exercise 2: Deliverable Requirements
+  ''' Exercise 2: Accuracy of the Computational Model: Velocity v. Time
         
         (1)   Compare model to exact, analytical velocity while x < 440 m.
         (2a)  What delta-t is sufficently small?
         (2b)  How do you know?
           
-      Exercise 3: Deliverable Requirements
+      Exercise 3: Accuracy of the Computational Model: Position v. Time
       
         (1)   Compare model to exact, analytical position while x < 440 m.
         (2a)  What delta-t is sufficiently small?
@@ -279,7 +282,7 @@ if __name__ == '__main__':
   print('Worst-case Velocity Error:\t{:.3f} (m/s)'.format(v_abs_error))
   print('Worst-case Position Error:\t{:.3f} (m)'.format(x_abs_error))
 
-  ''' Exercise 4: Deliverable Requirements
+  ''' Exercise 4: Position and Velocity of a Dropped Bowling Ball
         
         (1)   Plot your compuational models for position and velocity.
         (2)   Did the ball reach terminal velocity?
@@ -317,4 +320,36 @@ if __name__ == '__main__':
   TOF_exact = 0
 
   print('According to the model, the object fell for {:.2f} (s).'.format(TOF_num))
+
+
+  ''' Exercise 5: Position and Velocity of a Dropped Mystery Sphere
+
+  		(1) Plot position, velocity, and acceleration
+  		(2) How long does it take to travel 440 (m)?
+  		(3) Has it reached terminal velocity?
   
+  '''
+
+  # Object: 'Toyota Prius'
+  m = 1325
+  D = 0.25
+  A = 1.470 * 1.760 
+  h = 440
+
+
+  dt = 0.01
+
+  t_num, x_num, v_num, a_num = euler_projectile(mass=m, area=A, x0=h, dt=dt, D=D)
+
+  print()
+  print('A Toyota Prius (Gen 4), weighing 1325 kg, with a frontal cross-section of',
+  	    '1,470 mm x 1,760 mm, and a slick Cd of 0.25 is dropped from the top of the',
+  	    'Sears Tower (440 m)')
+
+  print('It falls for a total of {:.2f} (s)'.format(max(t_num)))
+
+  terminal_velocity = abs(velocity_exact(t=1e10, area=A, mass=m, D=D))
+  percent_of_term = abs(min(v_num)) / terminal_velocity * 100
+
+  print('and reaches {:.0f} mph or {:.1f} % of its terminal velocity ({:.0f} mph).'.format(abs(min(v_num)) * 2.23694, percent_of_term, terminal_velocity * 2.23694))
+  print('Not a single tear is shed.')
