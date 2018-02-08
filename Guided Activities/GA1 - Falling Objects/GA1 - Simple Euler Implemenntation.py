@@ -192,11 +192,13 @@ if __name__ == '__main__':
   a_exact = acceleartion(t_exact, area, mass)
 
   # Filter for points where x < 440 m
-  x_num = [v for x in x_num if x > 0]
-  v_num = [x for x, v in zip(x_num, v_num) if x >= 0]
+  x_num = [x for x in x_num if x >= 0]
+  t_num = [t for t, x in zip(t_num, x_num) if x >= 0]
+  v_num = [v for x, v in zip(x_num, v_num) if x >= 0]
   a_num = [a for x, a in zip(x_num, a_num) if x >= 0]
   
   x_exact = [x for x in x_exact if x >= 0]
+  t_exact = [t for t, x in zip(t_exact, x_exact) if x >= 0]
   v_exact = [v for x, v in zip(x_exact, v_exact) if x >= 0]
   a_exact = [a for x, a in zip(x_exact, a_exact) if x >= 0]
   
