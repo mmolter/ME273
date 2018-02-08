@@ -174,7 +174,6 @@ def euler_projectile(mass, area, x0=0, xf=0, v0=0, dt=0.01, rho=1.225, g=9.80665
 
     return t_num, x_num, v_num, a_num
 
-
 def exact_projectile(times, mass, area, x0=0, rho=1.225, g=9.80665, D=0.5):
     ''' Returns time, position, velocity and acceleration of a body in free-fall with drag for a given list of times.
 
@@ -251,12 +250,11 @@ if __name__ == '__main__':
   radius = 0.012
   mass = 8
   area = np.pi * radius**2
+  h = 440
   dt = 0.001
 
-  t_num, x_num, v_num, a_num = euler_projectile(mass=mass, area=area, x0=440, dt=dt)
+  t_num, x_num, v_num, a_num = euler_projectile(mass=mass, area=area, x0=h, dt=dt)
 
-
-    
   ''' Exercise 2: Deliverable Requirements
         
         (1)   Compare model to exact, analytical velocity while x < 440 m.
@@ -271,7 +269,7 @@ if __name__ == '__main__':
   '''
 
   # Find the exact, analytical velocity and position for the time steps we used in our model.
-  t_exact, x_exact, v_exact, a_exact = exact_projectile(times=t_num, mass=mass, area=area, x0=440)
+  t_exact, x_exact, v_exact, a_exact = exact_projectile(times=t_num, mass=mass, area=area, x0=h)
   
   # Compare the worst-case error for both approximations
   v_rel_error = max(relative_error(v_num, v_exact))
@@ -284,8 +282,6 @@ if __name__ == '__main__':
   print('For t-delta {} (s):'.format(dt))
   print('Worst-case Velocity Error:\t{:.3f} (m/s)'.format(v_abs_error))
   print('Worst-case Position Error:\t{:.3f} (m)'.format(x_abs_error))
-  
-
 
   ''' Exercise 4: Deliverable Requirements
         
@@ -321,7 +317,6 @@ if __name__ == '__main__':
   
   print('At x = 0 m, the ball reached {speed:.1f} m/s or {per:.1f} % of terminal velocity'.format(speed=min(v_num),
                                                                                               per=per_of_term * 100))
-
   TOF_num = max(t_num)
   TOF_exact = 0
 
