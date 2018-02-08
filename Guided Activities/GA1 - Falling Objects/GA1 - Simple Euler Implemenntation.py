@@ -139,7 +139,7 @@ def euler_projectile(mass, area, x0=0, xf=0, v0=0, dt=0.01, **kwargs):
         x0 (float):     the intial position of the object in m
         v0 (float):     the initial velocity of the object in m/s
         dt (float):     the time-step for the simulation in s
-        **kwargs:		keyword arguments for modifying accelertaion function.
+        **kwargs:       keyword arguments for modifying accelertaion function.
 
     Returns:
         list (float): time stamps
@@ -184,7 +184,7 @@ def exact_projectile(times, mass, area, x0=0, **kwargs):
         x0 (float):     the intial position of the object in m
         v0 (float):     the initial velocity of the object in m/s
         dt (float):     the time-step for the simulation in s
-        **kwargs:		keyword arguments for modifying accelertaion function.
+        **kwargs:       keyword arguments for modifying accelertaion function.
 
     Returns:
         list (float): time stamps
@@ -213,7 +213,7 @@ def absolute_error(approx, exact):
     '''
 
     return [abs(a - e) for a, e in zip(approx, exact)]
-
+  
 def relative_error(approx, exact):
     ''' Returns relative error between two lists.
 
@@ -224,132 +224,162 @@ def relative_error(approx, exact):
     Returns:
         list (float):   list of relative errors
     '''
-
     return [abs(a - e) / e if e != 0 else 0 for a, e in zip(approx, exact)]
+
+def kinematics_plots(t, x, v, a, xe=None, ve=None, ae=None, title=None):
+    ''' Graph set of plots for kinematics lists.
+
+    Args:
+        t (list):   list of times
+        x (list):   list of positions (m)
+        v (list):   list of velocities (m/s)
+        a (list):   list of accelerations (m/s**2)
+
+        Optional:
+
+        xe (list):  list of exact solution positions (m)
+        ve (list):  list of exact solution velocities (m/s)
+        ve (list):  list of exact solution accelerations (m/s**2)
+
+    Returns:
+        Nothing
+    '''
+
+    f, (ax, av, aa) = plt.subplots(3, sharex=True)
+
+    if title: ax.set_title(title)
+  
+    ax.plot(t, x, color='black', linestyle='-')
+    av.plot(t, v, color='black', linestyle='-')
+    aa.plot(t, a, color='black', linestyle='-')
+
+    if xe is not None: ax.plot(t_exact, x_exact, color='black', linestyle='--') 
+    if ve is not None: av.plot(t_exact, v_exact, color='black', linestyle='--') 
+    if ae is not None: aa.plot(t_exact, a_exact, color='black', linestyle='--') 
+
+    ax.grid(which='both', linestyle=':')
+    av.grid(which='both', linestyle=':')
+    aa.grid(which='both', linestyle=':')    
+
+    ax.tick_params(which='both', direction='in')
+    av.tick_params(which='both', direction='in')
+    aa.tick_params(which='both', direction='in')
+  
+    ax.set_ylabel('Position ($m$)')
+    av.set_ylabel('Velocity ($m/s$)')
+    aa.set_ylabel('Acceleration ($m/s^2$)')
+  
+    aa.set_xlabel('Time ($s$)')
+  
+    plt.show()
 
 
 if __name__ == '__main__':
 
-  ''' Exercise 1: Compatational Model of a Falling Sphere w/Air Resistance
+    ''' Exercise 1: Compatational Model of a Falling Sphere w/Air Resistance
         
           (1) Implement model based on Euler approximation
           
-       Model: Typical Bowling Ball (Serway, 1999)
+        Model: Typical Bowling Ball (Serway, 1999)
        
         Mass:   8 kg
         Radius: 0.012 m
        
-       Serway, Raymond. Physics for Scientists and Engineers, with Modern Physics.
-          Brooks Publishing Company; 5th Edition, 1998: 338.
+        Serway, Raymond. Physics for Scientists and Engineers, with Modern Physics.
+            Brooks Publishing Company; 5th Edition, 1998: 338.
 
-  '''
-  radius = 0.012
-  area = np.pi * radius**2
+    '''
 
-  mass = 8
+    mass = 8
+    radius = 0.012
+    area = np.pi * radius**2
+    h = 440
 
-  h = 440
+    dt = 0.01
 
-  dt = 0.001
+    t_num, x_num, v_num, a_num = euler_projectile(mass=mass, area=area, x0=h, dt=dt)
 
-  t_num, x_num, v_num, a_num = euler_projectile(mass=mass, area=area, x0=h, dt=dt)
-
-  ''' Exercise 2: Accuracy of the Computational Model: Velocity v. Time
+    ''' Exercise 2: Accuracy of the Computational Model: Velocity v. Time
         
         (1)   Compare model to exact, analytical velocity while x < 440 m.
         (2a)  What delta-t is sufficently small?
         (2b)  How do you know?
           
-      Exercise 3: Accuracy of the Computational Model: Position v. Time
+        Exercise 3: Accuracy of the Computational Model: Position v. Time
       
         (1)   Compare model to exact, analytical position while x < 440 m.
         (2a)  What delta-t is sufficiently small?
         (2b)  How does this compare the required delta-t for the velocity approximation?
-  '''
+    '''
 
-  # Find the exact, analytical velocity and position for the time steps we used in our model.
-  t_exact, x_exact, v_exact, a_exact = exact_projectile(times=t_num, mass=mass, area=area, x0=h)
+    # Find the exact, analytical velocity and position for the time steps we used in our model.
+    t_exact, x_exact, v_exact, a_exact = exact_projectile(times=t_num, mass=mass, area=area, x0=h)
   
-  # Compare the worst-case error for both approximations
-  v_rel_error = max(relative_error(v_num, v_exact))
-  x_rel_error = max(relative_error(x_num, x_exact))
+    # Compare the worst-case error for both approximations
+    v_rel_error = max(relative_error(v_num, v_exact))
+    x_rel_error = max(relative_error(x_num, x_exact))
 
-  v_abs_error = max(absolute_error(v_num, v_exact))
-  x_abs_error = max(absolute_error(v_num, v_exact))
+    v_abs_error = max(absolute_error(v_num, v_exact))
+    x_abs_error = max(absolute_error(v_num, v_exact))
   
-  # Print results to console
-  print('For t-delta {} (s):'.format(dt))
-  print('Worst-case Velocity Error:\t{:.3f} (m/s)'.format(v_abs_error))
-  print('Worst-case Position Error:\t{:.3f} (m)'.format(x_abs_error))
+    # Print results to console
+    print('For t-delta {} (s):'.format(dt))
+    print('Worst-case Velocity Error:\t{:.3f} (m/s)'.format(v_abs_error))
+    print('Worst-case Position Error:\t{:.3f} (m)'.format(x_abs_error))
 
-  ''' Exercise 4: Position and Velocity of a Dropped Bowling Ball
+    ''' Exercise 4: Position and Velocity of a Dropped Bowling Ball
         
         (1)   Plot your compuational models for position and velocity.
         (2)   Did the ball reach terminal velocity?
         (3)   How long does it take to hit the ground?
-  '''
+    '''
   
-  f, (ax, av, aa) = plt.subplots(3, sharex=True)
+    # Plot kinematics curves
+    kinematics_plots(t=t_num, x=x_num, v=v_num, a=a_num, 
+                        xe=x_exact, ve=v_exact, ae=a_exact, 
+                        title='Bowling Ball Falling from 440 (m)')
   
-  ax.plot(t_num, x_num, color='black', linestyle='-')
-  ax.plot(t_exact, x_exact, color='black', linestyle='--')
-
-  av.plot(t_num, v_num, color='black', linestyle='-')
-  av.plot(t_exact, v_exact, color='black', linestyle='--')
-
-  aa.plot(t_num, a_num, color='black', linestyle='-')
-  aa.plot(t_exact, a_exact, color='black', linestyle='--')
+    # Find the terminal velocity
+    v_terminal = velocity_exact(1e6, area, mass)
   
-  ax.set_ylabel('Position ($m$)')
-  av.set_ylabel('Velocity ($m/s$)')
-  aa.set_ylabel('Acceleration ($m/s^2$)')
+    # Find how close we were to terminal velocity at x == 0 m
+    per_of_term = abs(min(v_num)) / abs(v_terminal)
   
-  aa.set_xlabel('Time ($s$)')
-  
-  plt.show()
-  
-  # Find the terminal velocity
-  v_terminal = velocity_exact(1e6, area, mass)
-  
-  # Find how close we were to terminal velocity at x == 0 m
-  per_of_term = abs(min(v_num)) / abs(v_terminal)
-  
-  print('At x = 0 m, the ball reached {speed:.1f} m/s or {per:.1f} % of terminal velocity'.format(speed=min(v_num),
-                                                                                              per=per_of_term * 100))
-  TOF_num = max(t_num)
-  TOF_exact = 0
-
-  print('According to the model, the object fell for {:.2f} (s).'.format(TOF_num))
+    print('At x = 0 m, the ball reached {speed:.1f} m/s or {per:.1f} % of terminal velocity'.format(speed=min(v_num), per=per_of_term * 100))
+    print('According to the model, the object fell for {:.2f} (s).'.format(max(t_num)))
 
 
-  ''' Exercise 5: Position and Velocity of a Dropped Mystery Sphere
+    ''' Exercise 5: Position and Velocity of a Dropped Mystery Sphere
 
-  		(1) Plot position, velocity, and acceleration
-  		(2) How long does it take to travel 440 (m)?
-  		(3) Has it reached terminal velocity?
-  
-  '''
+        (1) Plot position, velocity, and acceleration
+        (2) How long does it take to travel 440 (m)?
+        (3) Has it reached terminal velocity?
+     
+    '''
 
-  # Object: 'Toyota Prius'
-  m = 1325
-  D = 0.25
-  A = 1.470 * 1.760 
-  h = 440
+    # Object: 'Toyota Prius'
+    m = 1325
+    D = 0.25
+    A = 1.470 * 1.760 
+    h = 440
 
 
-  dt = 0.01
+    dt = 0.01
 
-  t_num, x_num, v_num, a_num = euler_projectile(mass=m, area=A, x0=h, dt=dt, D=D)
+    t_num, x_num, v_num, a_num = euler_projectile(mass=m, area=A, x0=h, dt=dt, D=D)
 
-  print()
-  print('A Toyota Prius (Gen 4), weighing 1325 kg, with a frontal cross-section of',
-  	    '1,470 mm x 1,760 mm, and a slick Cd of 0.25 is dropped from the top of the',
-  	    'Sears Tower (440 m)')
+    print()
+    print('A Toyota Prius (Gen 4), weighing 1325 kg, with a frontal cross-section of',
+        '1,470 mm x 1,760 mm, and a slick Cd of 0.25 is dropped from the top of the',
+        'Sears Tower (440 m)')
 
-  print('It falls for a total of {:.2f} (s)'.format(max(t_num)))
+    print('It falls for a total of {:.2f} (s)'.format(max(t_num)))
 
-  terminal_velocity = abs(velocity_exact(t=1e10, area=A, mass=m, D=D))
-  percent_of_term = abs(min(v_num)) / terminal_velocity * 100
+    terminal_velocity = abs(velocity_exact(t=1e10, area=A, mass=m, D=D))
+    percent_of_term = abs(min(v_num)) / terminal_velocity * 100
 
-  print('and reaches {:.0f} mph or {:.1f} % of its terminal velocity ({:.0f} mph).'.format(abs(min(v_num)) * 2.23694, percent_of_term, terminal_velocity * 2.23694))
-  print('Not a single tear is shed.')
+    print('and reaches {:.0f} mph or {:.1f} % of its terminal velocity ({:.0f} mph).'.format(abs(min(v_num)) * 2.23694, percent_of_term, terminal_velocity * 2.23694))
+    print('Not a single tear is shed.')
+
+    kinematics_plots(t=t_num, x=x_num, v=v_num, a=a_num, 
+                     title='Toyota Prius Falling from 440 (m)')
