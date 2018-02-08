@@ -50,7 +50,7 @@ import matplotlib.pyplot as plt
     Repeat exercise 4 for a different sphere (of your choice). How long does it take to
     travel the 440 meters to the ground, and has it reached its terminal velocity upon
     impact?
-''''
+'''
 
 def acceleration(vel, area, mass, rho=1.225, g=9.80665, D=0.5):
   ''' Return the acceleration of a body in free-fall accounting for drag.
@@ -83,7 +83,7 @@ def acceleration(vel, area, mass, rho=1.225, g=9.80665, D=0.5):
     float:  the acceleration in m/s**2 for the body.
   '''
   
-  return g - ((D * rho * area) / (2 * mass))*(vel**2)
+  return -1 * (g - ((D * rho * area) / (2 * mass))*(vel**2))
   
 def velocity_exact(t, area, mass, rho=1.225, g=9.80665, D=0.5):
   ''' Returns the analytical velocity of a body in free-fall at time t.
@@ -104,9 +104,9 @@ def velocity_exact(t, area, mass, rho=1.225, g=9.80665, D=0.5):
     float:  the velocity in m/s for the body.
   '''
   
-  return np.sqrt((2 * m) / (D * rho * area)) * np.tanh(np.sqrt((D * rho * A * g) / (2 * m)) * t)
+  return -1 * np.sqrt((2 * mass * g) / (D * rho * area)) * np.tanh(np.sqrt((D * rho * area * g) / (2 * mass)) * t)
   
-def position_exact(t, area, mass, rho=1.225, g=9.80665, D=0.5):
+def position_exact(t, x0, area, mass, rho=1.225, g=9.80665, D=0.5):
   ''' Returns the analytical position of a body in free-fall at time t.
   
   Uses the equation:
@@ -125,7 +125,7 @@ def position_exact(t, area, mass, rho=1.225, g=9.80665, D=0.5):
     float:  the position in m for the body.
   '''
   
-  return ((2 * m) / (D * rho * area)) * np.ln(np.cosh(np.sqrt((D * rho * A * g) / (2 * m)) * t))
+  return x0 - ((2 * mass) / (D * rho * area)) * np.log(np.cosh(np.sqrt((D * rho * area * g) / (2 * mass)) * t))
   
 
 if __name__ == '__main__':
@@ -146,14 +146,16 @@ if __name__ == '__main__':
   radius = 0.012
   mass = 8
   area = np.pi * radius**2
+
+  h = 440
   
   t = 0
-  x = 440
+  x = h
   v = 0
   a = acceleration(v, area, mass)
   
-  dt = 0.01
-  tmax = 30
+  dt = 0.1
+  tmax = 60
   
   t_num = [t]
   x_num = [x]
@@ -187,9 +189,9 @@ if __name__ == '__main__':
 
   # Find the exact, analytical velocity and position for the time steps we used in our model.
   t_exact = np.asarray(t_num)
-  x_exact = position_exact(np.asarray(t_num), area, mass)
-  v_exact = velocity_exact(np.asarray(t_num), area, mass)
-  a_exact = acceleartion(t_exact, area, mass)
+  x_exact = position_exact(t_exact, h, area, mass)
+  v_exact = velocity_exact(t_exact, area, mass)
+  a_exact = acceleration(v_exact, area, mass)
 
   # Filter for points where x < 440 m
   x_num = [x for x in x_num if x >= 0]
@@ -203,13 +205,16 @@ if __name__ == '__main__':
   a_exact = [a for x, a in zip(x_exact, a_exact) if x >= 0]
   
   # Compare the worst-case error for both approximations
-  v_error = max(abs((v_n - v_e) / v_e) for v_n, v_e in zip(v_num, v_exact))
-  x_error = max(abs((x_n - x_e) / x_e) for x_n, x_e in zip(x_num, x_exact))
+  v_rel_error = max(abs((v_n - v_e) / v_e) for v_n, v_e in zip(v_num, v_exact) if v_n != 0 and v_e != 0)
+  x_rel_error = max(abs((x_n - x_e) / x_e) for x_n, x_e in zip(x_num, x_exact) if x_n != 0 and x_e != 0)
+
+  v_abs_error = max(abs(v_n - v_e) for v_n, v_e in zip(v_num, v_exact))
+  x_abs_error = max(abs(x_n - x_e) for x_n, x_e in zip(x_num, x_exact))
   
   # Print results to console
   print('For t-delta {} (s):'.format(dt))
-  print('Worst-case Velocity Error:\t{:.1<3} %'.format(v_error))
-  print('Worst-case Position Error:\t{:.1<3} %'.format(x_error))
+  print('Worst-case Velocity Error:\t{:.3f} (m/s)'.format(v_abs_error))
+  print('Worst-case Position Error:\t{:.3f} (m)'.format(x_abs_error))
   
   ''' Exercise 4: Deliverable Requirements
         
@@ -220,26 +225,36 @@ if __name__ == '__main__':
   
   f, (ax, av, aa) = plt.subplots(3, sharex=True)
   
-  ax.plot(t_num, x_num)
-  av.plot(t_num, v_num)
-  aa.plot(t_num, a_num)
+  ax.plot(t_num, x_num, color='black', linestyle='-')
+  ax.plot(t_exact, x_exact, color='black', linestyle='--')
+
+  av.plot(t_num, v_num, color='black', linestyle='-')
+  av.plot(t_exact, v_exact, color='black', linestyle='--')
+
+  aa.plot(t_num, a_num, color='black', linestyle='-')
+  aa.plot(t_exact, a_exact, color='black', linestyle='--')
   
-  ax.ylabel('Position ($m$)')
-  av.ylabel('Velocity ($m/s$)')
-  aa.ylabel('Acceleration ($m/s^2$)')
+  ax.set_ylabel('Position ($m$)')
+  av.set_ylabel('Velocity ($m/s$)')
+  aa.set_ylabel('Acceleration ($m/s^2$)')
   
-  aa.xlabel('Time ($s$)')
+  aa.set_xlabel('Time ($s$)')
   
-  f.show()
+  plt.show()
   
   # Find the terminal velocity
-  v_terminal = velocity_exact(t=np.inf, area, mass)
+  v_terminal = velocity_exact(1e5, area, mass)
   
   # Find how close we were to terminal velocity at x == 0 m
-  per_of_term = max(v_num) / v_terminal
+  per_of_term = abs(min(v_num)) / abs(v_terminal)
   
-  print('At x = 0 m, the ball reached {speed:.2f} or {per:.1f} % of terminal velocity'.format(speed=max(v_num),
-                                                                                              per=per_of_term))
+  print('At x = 0 m, the ball reached {speed:.1f} m/s or {per:.1f} % of terminal velocity'.format(speed=min(v_num),
+                                                                                              per=per_of_term * 100))
+
+  TOF_num = max(t_num)
+  TOF_exact = 0
+
+  print('According to the model, the object fell for {:.2f} (s).'.format(TOF_num))
   
   
                 
