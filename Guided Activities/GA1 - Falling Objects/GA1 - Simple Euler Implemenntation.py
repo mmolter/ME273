@@ -78,6 +78,55 @@ def position_exact(t, area, mass, rho=1.225, g=9.80665, D=0.5):
   
 
 if __name__ == '__main__':
-  pass
+  ''' Assignment questions:
+  
+        Exercise 1: Computational model of a falling sphere with air resistance
+        
+        Produce a working computational model in MATLAB (or OCTAVE, or in another
+        programming language of your choice) of a sphere that has been dropped from
+        rest from a very tall building using the simple Euler method. Assume that the
+        sphere will move entirely in one dimension, and that it is subject to the constant
+        gravitational force near Earth's surface and to a drag for proportional to the
+        square of the sphere's instantaneous speed.
+        
+        Exercise 2: Accuracy of computational model: velocity v. time
+        
+        Since the computation approach is based on an approximation, it is important to
+        determine jsut how small delta t should be for the approximation to accurately 
+        solve the 1-D air resistance problem. Make a comparison between the time dependence
+        of the velocity predicted by the computational model, and that predicted by the
+        exact result.
+        
+        Use parameters that describe a 16 lbs bowling ball (you should look up the
+        diamter, and convert to meters), and let it fall a distance equivalent ot the 
+        height of the Sears, oops - Willis, tower (440 m). Assume the ball is initially
+        at rest. Use a value of 0.5 for the drag coefficient, and the density of air near
+        sea level. What value of delta t do you deem to be sufficiently small for the
+        computational model to be accurate? Explain how you arrived at this value.
+        
+        Exercise 3: accuracy of the computational model: position v. time
+        
+        Carry out the same comparison (computational v. exact analytical solution) for
+        the bowling ball's posistion as a function of time.
+        
+        Assume the bowling ball is falling the same distance of 440 m. Do you find the 
+        same value of delta t as you found for the velocity comparison in exersise 2 to
+        be acceptable for the poistion comparison?
+        
+        Exercise 4: position and velocity of dropped bowling ball
+        
+        Produce plots of the bowling ball's velocity and vertical position as functions
+        of time from teh results of the computational model, using the parameters from the
+        previous exercises and the value of delta t (determined in exercises 2 and 3) that 
+        produces a tolerably accurate compuational solution. Has the bowling ball reached
+        its terminal velocity by the time it hits the ground? Use your model to predict the
+        time required for the bowling ball to fall the full 440 meters to the ground.
+        
+        Exercise 5: position and velocity of a dropped mystery sphere
+        
+        Repeat exercise 4 for a different sphere (of your choice). How long does it take to
+        travel the 440 meters to the ground, and has it reached its terminal velocity upon
+        impact?
+  
   
   
