@@ -126,10 +126,115 @@ def position_exact(t, x0, area, mass, rho=1.225, g=9.80665, D=0.5):
   '''
   
   return x0 - ((2 * mass) / (D * rho * area)) * np.log(np.cosh(np.sqrt((D * rho * area * g) / (2 * mass)) * t))
-  
+
+def euler_projectile(mass, area, x0=0, xf=0, v0=0, dt=0.01, rho=1.225, g=9.80665, D=0.5):
+    ''' Returns time, position, velocity and acceleration of a body in free-fall with drag.
+
+    Uses a Euler approximation with a time-detla, dt, to numerically approximate the motion
+    of a body in free-fall under the influence of gravity and drag.
+
+    Args:
+        mass (float):   the mass of the object in kg
+        area (float):   the cross-sectional area of the object in m**2
+        x0 (float):     the intial position of the object in m
+        v0 (float):     the initial velocity of the object in m/s
+        dt (float):     the time-step for the simulation in s
+        rho (float):    the density of air in kg/m**3
+        g (float):      the gravitational constant in m/s**2
+        D (float):      the drag coefficient (default ot 0.5 for a sphere)
+
+    Returns:
+        list (float): time stamps
+        list (float): positions
+        list (float): velocities
+        list (float): accelerations
+
+    '''
+
+    t = 0
+    x = x0
+    v = v0
+    a = acceleration(v0, area=area, mass=mass, g=g, rho=rho, D=D)
+
+    t_num = [t]
+    x_num = [x]
+    v_num = [v]
+    a_num = [a]
+
+    while x >= xf:
+        t += dt
+        x += dt * v
+        v += dt * a
+        a = acceleration(v, area=area, mass=mass, g=g, rho=rho, D=D)
+
+        t_num.append(t)
+        x_num.append(x)
+        v_num.append(v)
+        a_num.append(a)
+
+    return t_num, x_num, v_num, a_num
+
+
+def exact_projectile(times, mass, area, x0=0, rho=1.225, g=9.80665, D=0.5):
+    ''' Returns time, position, velocity and acceleration of a body in free-fall with drag for a given list of times.
+
+    Uses analytical solutions to free-fall with drage ODEs to provide exact time, position,
+    velocity, and acceleration arrays for a given timestep.
+
+    Args:
+        mass (float):   the mass of the object in kg
+        area (float):   the cross-sectional area of the object in m**2
+        x0 (float):     the intial position of the object in m
+        v0 (float):     the initial velocity of the object in m/s
+        dt (float):     the time-step for the simulation in s
+        rho (float):    the density of air in kg/m**3
+        g (float):      the gravitational constant in m/s**2
+        D (float):      the drag coefficient (default ot 0.5 for a sphere)
+
+    Returns:
+        list (float): time stamps
+        list (float): positions
+        list (float): velocities
+        list (float): accelerations
+
+    '''
+
+    t_exact = times
+    x_exact = position_exact(np.asarray(times), x0, area, mass)
+    v_exact = velocity_exact(np.asarray(times), area, mass)
+    a_exact =   acceleration(np.asarray(v_exact), area, mass)
+
+    return t_exact, x_exact, v_exact, a_exact
+
+def absolute_error(approx, exact):
+    ''' Returns absolute error between two lists.
+
+    Args:
+        approx (list):  the list of numerical values.
+        exact (list):   the list of exact values.
+
+    Returns:
+        list (float):   list of absolute errors
+    '''
+
+    return [abs(a - e) for a, e in zip(approx, exact)]
+
+def relative_error(approx, exact):
+    ''' Returns relative error between two lists.
+
+    Args:
+        approx (list):  the list of numerical values.
+        exact (list):   the list of exact values.
+
+    Returns:
+        list (float):   list of relative errors
+    '''
+
+    return [abs(a - e) / e for a, e in zip(approx, exact)]
+
 
 if __name__ == '__main__':
-  
+
   ''' Exercise 1: Deliverable Requirements
         
           (1) Implement model based on Euler approximation
@@ -146,33 +251,11 @@ if __name__ == '__main__':
   radius = 0.012
   mass = 8
   area = np.pi * radius**2
+  dt = 0.001
 
-  h = 440
-  
-  t = 0
-  x = h
-  v = 0
-  a = acceleration(v, area, mass)
-  
-  dt = 0.1
-  tmax = 60
-  
-  t_num = [t]
-  x_num = [x]
-  v_num = [v]
-  a_num = [a]
-  
-  while t < tmax:
-    a = acceleration(v, area, mass)
-    
-    t += dt 
-    x += dt * v
-    v += dt * a
-    
-    t_num.append(t)
-    x_num.append(x)
-    v_num.append(v)
-    a_num.append(a)
+  t_num, x_num, v_num, a_num = euler_projectile(mass=mass, area=area, x0=440, dt=dt)
+
+
     
   ''' Exercise 2: Deliverable Requirements
         
@@ -188,34 +271,22 @@ if __name__ == '__main__':
   '''
 
   # Find the exact, analytical velocity and position for the time steps we used in our model.
-  t_exact = np.asarray(t_num)
-  x_exact = position_exact(t_exact, h, area, mass)
-  v_exact = velocity_exact(t_exact, area, mass)
-  a_exact = acceleration(v_exact, area, mass)
-
-  # Filter for points where x < 440 m
-  x_num = [x for x in x_num if x >= 0]
-  t_num = [t for t, x in zip(t_num, x_num) if x >= 0]
-  v_num = [v for x, v in zip(x_num, v_num) if x >= 0]
-  a_num = [a for x, a in zip(x_num, a_num) if x >= 0]
-  
-  x_exact = [x for x in x_exact if x >= 0]
-  t_exact = [t for t, x in zip(t_exact, x_exact) if x >= 0]
-  v_exact = [v for x, v in zip(x_exact, v_exact) if x >= 0]
-  a_exact = [a for x, a in zip(x_exact, a_exact) if x >= 0]
+  t_exact, x_exact, v_exact, a_exact = exact_projectile(times=t_num, mass=mass, area=area, x0=440)
   
   # Compare the worst-case error for both approximations
-  v_rel_error = max(abs((v_n - v_e) / v_e) for v_n, v_e in zip(v_num, v_exact) if v_n != 0 and v_e != 0)
-  x_rel_error = max(abs((x_n - x_e) / x_e) for x_n, x_e in zip(x_num, x_exact) if x_n != 0 and x_e != 0)
+  v_rel_error = max(relative_error(v_num, v_exact))
+  x_rel_error = max(relative_error(x_num, x_exact))
 
-  v_abs_error = max(abs(v_n - v_e) for v_n, v_e in zip(v_num, v_exact))
-  x_abs_error = max(abs(x_n - x_e) for x_n, x_e in zip(x_num, x_exact))
+  v_abs_error = max(absolute_error(v_num, v_exact))
+  x_abs_error = max(absolute_error(v_num, v_exact))
   
   # Print results to console
   print('For t-delta {} (s):'.format(dt))
   print('Worst-case Velocity Error:\t{:.3f} (m/s)'.format(v_abs_error))
   print('Worst-case Position Error:\t{:.3f} (m)'.format(x_abs_error))
   
+
+
   ''' Exercise 4: Deliverable Requirements
         
         (1)   Plot your compuational models for position and velocity.
@@ -255,9 +326,4 @@ if __name__ == '__main__':
   TOF_exact = 0
 
   print('According to the model, the object fell for {:.2f} (s).'.format(TOF_num))
-  
-  
-                
-       
-  
   
