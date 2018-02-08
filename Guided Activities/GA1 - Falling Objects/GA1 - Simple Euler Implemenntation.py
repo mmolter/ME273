@@ -127,7 +127,7 @@ def position_exact(t, x0, area, mass, rho=1.225, g=9.80665, D=0.5):
   
   return x0 - ((2 * mass) / (D * rho * area)) * np.log(np.cosh(np.sqrt((D * rho * area * g) / (2 * mass)) * t))
 
-def euler_projectile(mass, area, x0=0, xf=0, v0=0, dt=0.01, rho=1.225, g=9.80665, D=0.5):
+def euler_projectile(mass, area, x0=0, xf=0, v0=0, dt=0.01, **kwargs):
     ''' Returns time, position, velocity and acceleration of a body in free-fall with drag.
 
     Uses a Euler approximation with a time-detla, dt, to numerically approximate the motion
@@ -139,9 +139,7 @@ def euler_projectile(mass, area, x0=0, xf=0, v0=0, dt=0.01, rho=1.225, g=9.80665
         x0 (float):     the intial position of the object in m
         v0 (float):     the initial velocity of the object in m/s
         dt (float):     the time-step for the simulation in s
-        rho (float):    the density of air in kg/m**3
-        g (float):      the gravitational constant in m/s**2
-        D (float):      the drag coefficient (default ot 0.5 for a sphere)
+        **kwargs:		keyword arguments for modifying accelertaion function.
 
     Returns:
         list (float): time stamps
@@ -154,7 +152,7 @@ def euler_projectile(mass, area, x0=0, xf=0, v0=0, dt=0.01, rho=1.225, g=9.80665
     t = 0
     x = x0
     v = v0
-    a = acceleration(v0, area=area, mass=mass, g=g, rho=rho, D=D)
+    a = acceleration(v0, area=area, mass=mass, **kwargs)
 
     t_num = [t]
     x_num = [x]
@@ -165,7 +163,7 @@ def euler_projectile(mass, area, x0=0, xf=0, v0=0, dt=0.01, rho=1.225, g=9.80665
         t += dt
         x += dt * v
         v += dt * a
-        a = acceleration(v, area=area, mass=mass, g=g, rho=rho, D=D)
+        a = acceleration(v, area=area, mass=mass, **kwargs)
 
         t_num.append(t)
         x_num.append(x)
@@ -174,7 +172,7 @@ def euler_projectile(mass, area, x0=0, xf=0, v0=0, dt=0.01, rho=1.225, g=9.80665
 
     return t_num, x_num, v_num, a_num
 
-def exact_projectile(times, mass, area, x0=0, rho=1.225, g=9.80665, D=0.5):
+def exact_projectile(times, mass, area, x0=0, **kwargs):
     ''' Returns time, position, velocity and acceleration of a body in free-fall with drag for a given list of times.
 
     Uses analytical solutions to free-fall with drage ODEs to provide exact time, position,
@@ -186,9 +184,7 @@ def exact_projectile(times, mass, area, x0=0, rho=1.225, g=9.80665, D=0.5):
         x0 (float):     the intial position of the object in m
         v0 (float):     the initial velocity of the object in m/s
         dt (float):     the time-step for the simulation in s
-        rho (float):    the density of air in kg/m**3
-        g (float):      the gravitational constant in m/s**2
-        D (float):      the drag coefficient (default ot 0.5 for a sphere)
+        **kwargs:		keyword arguments for modifying accelertaion function.
 
     Returns:
         list (float): time stamps
@@ -199,9 +195,9 @@ def exact_projectile(times, mass, area, x0=0, rho=1.225, g=9.80665, D=0.5):
     '''
 
     t_exact = times
-    x_exact = position_exact(np.asarray(times), x0, area, mass)
-    v_exact = velocity_exact(np.asarray(times), area, mass)
-    a_exact =   acceleration(np.asarray(v_exact), area, mass)
+    x_exact = position_exact(np.asarray(times), x0, area, mass, **kwargs)
+    v_exact = velocity_exact(np.asarray(times), area, mass, **kwargs)
+    a_exact =   acceleration(np.asarray(v_exact), area, mass, **kwargs)
 
     return t_exact, x_exact, v_exact, a_exact
 
@@ -229,7 +225,7 @@ def relative_error(approx, exact):
         list (float):   list of relative errors
     '''
 
-    return [abs(a - e) / e for a, e in zip(approx, exact)]
+    return [abs(a - e) / e if e != 0 else 0 for a, e in zip(approx, exact)]
 
 
 if __name__ == '__main__':
@@ -310,7 +306,7 @@ if __name__ == '__main__':
   plt.show()
   
   # Find the terminal velocity
-  v_terminal = velocity_exact(1e5, area, mass)
+  v_terminal = velocity_exact(1e6, area, mass)
   
   # Find how close we were to terminal velocity at x == 0 m
   per_of_term = abs(min(v_num)) / abs(v_terminal)
