@@ -1,1 +1,0 @@
-exec(open(r"GA1 - Simpler Euler Implementation.py").read())
