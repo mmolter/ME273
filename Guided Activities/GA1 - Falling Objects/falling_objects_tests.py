@@ -4,6 +4,10 @@ import pytest
 from implementation import (acceleration, velocity_exact, position_exact, 
 	euler_projectile, exact_projectile, absolute_error, relative_error)
 
+''' This is my first attempt into unit testing. I was hoping to get some coverage of my
+	euler projectile simulator; however, I did not have time to build multiple tests.
+''''
+
 
 def test_acceleration():
 	D = 0.5
