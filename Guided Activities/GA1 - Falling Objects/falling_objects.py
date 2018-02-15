@@ -201,6 +201,29 @@ def exact_projectile(times, mass, area, x0=0, **kwargs):
 
     return t_exact, x_exact, v_exact, a_exact
 
+def terminal_velocity(area, mass, rho=1.225, g=9.80665, D=0.5):
+    ''' Returns the terminal velocity of an object in free-fall.
+    
+    Uses an analytical solution for the roots of:
+    
+                acceleration(mass, area, **kwargs) = 0
+    
+    Args:
+        vel (float):    the current velocity of the object m/s
+        area (float):   the cross-sectional area of the object in m**2
+        mass (float):   the mass of the object in kg
+        rho (float):    the density of air in kg/m**3 (default 1.225 kg/m**3)
+        g (float):      the acceleration due to gravity in m/s**2 (defautl 9.80665 m/s**2)
+        D (float):      the drag coefficient (default to 0.5 for a sphere)
+
+    Returns:
+        float:    terminal velocity in m/s
+        
+    '''
+    
+    return np.sqrt(g / ((D * rho * area) / (2 * mass)))
+        
+
 def absolute_error(approx, exact):
     ''' Returns absolute error between two lists.
 
@@ -253,9 +276,9 @@ def kinematics_plots(t, x, v, a, xe=None, ve=None, ae=None, title=None):
     av.plot(t, v, color='black', linestyle='-')
     aa.plot(t, a, color='black', linestyle='-')
 
-    if xe is not None: ax.plot(t_exact, x_exact, color='black', linestyle='--') 
-    if ve is not None: av.plot(t_exact, v_exact, color='black', linestyle='--') 
-    if ae is not None: aa.plot(t_exact, a_exact, color='black', linestyle='--') 
+    if xe is not None: ax.plot(t, xe, color='black', linestyle='--') 
+    if ve is not None: av.plot(t, ve, color='black', linestyle='--') 
+    if ae is not None: aa.plot(t, ae, color='black', linestyle='--') 
 
     ax.grid(which='both', linestyle=':')
     av.grid(which='both', linestyle=':')
