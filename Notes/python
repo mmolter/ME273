@@ -1,0 +1,18 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+a = 0
+b = 5
+
+x = np.linspace(a, b, 100)
+y = np.power(x, 2)
+Y = np.empty_like(x)
+
+dt = x[1] - x[0]
+for i in x.size:
+	Y[i] = Y[i-1] + y[i-1] * dt
+
+plt.plot(x, y)
+plt.plot(x, Y)
+plt.show()
+

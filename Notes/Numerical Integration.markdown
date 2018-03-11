@@ -1,0 +1,28 @@
+# Numerical Integration
+
+Remember learning how to integrate in Calculus? Remember how most integrals do not have closed form solution?
+
+**Useless!**
+
+Instead, we will learn **numerical integration** and use it to solve integrals you couldn't solve in you calculus class, in a way that is easier than you calculus class was.
+
+We will be looking at integrals of the form:
+
+$$
+	\int^a_b f(x)\,dx
+$$
+
+## Remann Sum
+
+The **Remann Sum** is a numerical integration technique that approximates the area under a curve using infintesmal rectangles. 
+
+Essentially, we evaluate:
+
+$$
+	\int^a_b f(x)\,dx = \sum^{n-1}_{n=0} f(x)\Delta x
+$$
+
+## Spreadsheet
+
+As usual, the first approach is using a spreadsheet in Microsoft Excel. In this particular case, this tool works very poorly. The number of cells you need become unweildly. 
+
