@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 def drag(v, D, rho, A):
     ''' Return drag force on a projectile subject to air resistance.
         
