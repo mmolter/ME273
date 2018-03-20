@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-def drag(v, D, rho, A):
+def drag_force(v, D, rho, A):
     ''' Return drag force on a projectile subject to air resistance.
         
         Returns a force vector in the opposite direction as the velocity
@@ -25,6 +25,50 @@ def drag(v, D, rho, A):
     
     return F_d * (-1) * unit_vector(v)
 
+def gravitational_force(m, g=9.80665):
+    ''' Return gravitational force on a projectile subject to gravity.
+        
+        Returns downward force vector in netwons. 
+
+                  F_g = g * m  
+
+        Args:
+            
+            m (np.array):       mass of the object (kg) 
+            g (np.float64):     gravitational acceleration (m/s**2)
+
+        Returns:
+
+            (np.array):         gravitational force vector (N)
+    '''
+
+    pass
+
+def acceleration(x, v, D, rho, A, m=1):
+    ''' Return the acceleration vector for a projectile subject to air resistance.
+        
+        Uses:
+
+                        a = F_net / m
+
+        Args:
+            
+            v (np.array):       velocity vector 
+            D (np.float64):     drag coefficient
+            rho (np.float64):   air density (units)
+            A (np.float64):     cross-sectional area (m**2)
+            m (np.float64):     mass of the projectile (kg)
+
+        Returns:
+
+            (np.array):         acceleration vector 
+    '''
+
+    F_d = drag_force(v, D, rho, A)
+    F_g = gravitational_force(m)
+
+    return (F_d + F_g) / m
+        
 def unit_vector(x):
     ''' Return unit vector for vector x. 
 
@@ -139,10 +183,10 @@ def launch_vector(mag, incline, azimuth=False, radians=False):
     '''
     
     if not radians:
-        incline = incline * (180.0 / np.pi)
-        
+        incline = incline * (np.pi / 180.0)
+
         if azimuth:
-            azimuth = azimuth * (180.0 / np.pi)
+            azimuth = azimuth * (np.pi / 180.0)
     
     if azimuth:
         z = mag * np.sin(incline)
@@ -158,4 +202,5 @@ def launch_vector(mag, incline, azimuth=False, radians=False):
         y = mag * np.sin(incline)
 
         return np.asarray([x, y])
+
 
