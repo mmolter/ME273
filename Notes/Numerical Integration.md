@@ -26,3 +26,22 @@ $$
 
 As usual, the first approach is using a spreadsheet in Microsoft Excel. In this particular case, this tool works very poorly. The number of cells you need become unweildly. 
 
+#### 22 March 2018
+
+As we decrease the size of dx in our numerical integration, the accuracy of our numerical solution approaches the exact solution. If dx goes to zero, the solution becomes exact. Now we will create a program to do this.
+
+```python
+
+def func(x):
+	''' An abstract function we want to integrate. '''
+
+	return 0.5 * x**3 - 1.5 * x**2 + 12 * x - 13
+
+def integrate(func, a, b, dx=0.1):
+	''' A Remann integrating function. '''
+
+	x = np.arange(a, b, dx)
+	y = func(x)
+
+	return sum(y * dx)
+```

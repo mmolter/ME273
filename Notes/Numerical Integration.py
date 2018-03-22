@@ -1,23 +1,36 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-a = 0
-b = 15
-dt = 0.01
+def function(x):
+    ''' An arbitary function we want to integrate. '''
 
-x = np.arange(a, b, dt) 
-y = np.sin(x)
-Y = np.empty_like(x)
+    return 0.085*x**3 - 1.5*x**2 + 12*x - 13
 
-dt = x[1] - x[0]
-for i in range(x.size):
-	Y[i] = Y[i-1] + y[i-1] * dt
 
-plt.plot(x, y)
-plt.plot(x, Y)
-plt.plot(x, 1 - np.cos(x))
-plt.show()
+def integrate(func, a, b, dx=0.1, method='left'):
+    ''' A remann integrating function 
+    
+        Args:
 
-print(x)
-print(y)
-print(Y)
+            func (function):    Arbitrary function to integrate
+            a (float):          starting point
+            b (float):          stopinng point
+            dx (float):         dx for integration
+
+            method (string):    'left'      -- left-hand remann
+                                'right'     -- right-hand remann
+                                'mid'       -- middle point remann
+                                'trapezoid' -- trapezoidal sum
+    
+    '''
+
+    assert method in ['left', 'right', 'mid', 'trapezoid']
+
+    x = np.arange(a, b, dx)
+    y = func(x)
+
+    if method = 'left':
+        integral = sum(y * dx)
+        
+
+print(integrate(function, 0, 10, 0.11, method='rigxt'))
