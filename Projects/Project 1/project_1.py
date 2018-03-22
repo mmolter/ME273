@@ -25,7 +25,7 @@ def drag_force(v, D, rho, A):
     
     return F_d * (-1) * unit_vector(v)
 
-def gravitational_force(m, g=9.80665):
+def gravitational_force(m, g=9.80665, dimensions=2, vertical_axis=1):
     ''' Return gravitational force on a projectile subject to gravity.
         
         Returns downward force vector in netwons. 
@@ -34,15 +34,20 @@ def gravitational_force(m, g=9.80665):
 
         Args:
             
-            m (np.array):       mass of the object (kg) 
-            g (np.float64):     gravitational acceleration (m/s**2)
+            m (np.array):           mass of the object (kg) 
+            g (np.float64):         gravitational acceleration (m/s**2)
+            dimensions (int):       number of dimensions in return vector
+            vertical_axis (int):    axis which gravitional force acts on
 
         Returns:
 
-            (np.array):         gravitational force vector (N)
+            (np.array):             gravitational force vector (N)
     '''
 
-    pass
+    force = np.zeros(dimensions)
+    force[vertical_axis] = -g * m
+    
+    return force
 
 def acceleration(x, v, D, rho, A, m=1):
     ''' Return the acceleration vector for a projectile subject to air resistance.
